@@ -1,10 +1,16 @@
 # Etapa 1: construcción del proyecto Angular
 FROM node:16 AS build
 WORKDIR /app
-COPY web-salud/package*.json ./
+
+# Copiar solo los package.json primero (mejor caching)
+COPY package*.json ./
 RUN npm install -g @angular/cli@16.2.10
 RUN npm install
-COPY web-salud .
+
+# Copiar todo el proyecto
+COPY . .
+
+# Construir para producción
 RUN ng build --configuration production
 
 # Etapa 2: servir la aplicación con Nginx
