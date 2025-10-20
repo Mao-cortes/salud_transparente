@@ -7,7 +7,8 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      - ./backend/database.db:/app/database.db
+      - ./backend:/app  # monta toda la carpeta local para ver cambios
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
     restart: always
 
   frontend:
@@ -16,5 +17,6 @@ services:
     ports:
       - "4200:4200"
     volumes:
-      - ./frontend/web-salud:/app
+      - ./frontend/web-salud:/app  # monta la carpeta local
+    command: sh -c "npm install && ng serve --host 0.0.0.0 --poll=2000"
     restart: always
