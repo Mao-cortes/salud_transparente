@@ -1,13 +1,12 @@
 from sqlalchemy import Column, Integer, String, Float
 from .database import Base
 
-class Producto(Base):
-    __tablename__ = "productos"
+
+class Hospital(Base):
+    __tablename__ = "hospitales"
 
     id = Column(Integer, primary_key=True, index=True)
     nombre = Column(String, nullable=False)
-    descripcion = Column(String)
-    precio = Column(Float)
-    cantidad = Column(Integer)
-    estado = Column(String, default="activo")
-
+    ciudad = Column(String, nullable=False)
+    recursos_asignados = Column(Float, nullable=False)
+    recursos_usados = Column(Float, nullable=False)

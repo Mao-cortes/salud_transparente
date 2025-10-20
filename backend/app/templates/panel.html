@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Panel de Transparencia en Salud 🏥</title>
+  <link rel="stylesheet" href="/static/css/panel.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+</head>
+<body>
+  <!-- ENCABEZADO -->
+  <header class="encabezado">
+    <div class="logo">
+      <i class="fas fa-heartbeat"></i>
+      <span>Transparencia en Salud</span>
+    </div>
+    <nav>
+      <a href="/">Inicio</a>
+      <a href="#reportes">Reportes</a>
+      <a href="#contacto">Contacto</a>
+    </nav>
+  </header>
+
+  <!-- SECCIÓN DE RESUMEN -->
+  <section class="resumen">
+    <div class="card">
+      <h3>Total Asignado</h3>
+      <p>${{ "{:,.0f}".format(total_asignado) }}</p>
+    </div>
+    <div class="card">
+      <h3>Total Usado</h3>
+      <p>${{ "{:,.0f}".format(total_usado) }}</p>
+    </div>
+    <div class="card">
+      <h3>Ejecución</h3>
+      <p>{{ porcentaje }}%</p>
+    </div>
+  </section>
+
+  <!-- BUSCADOR -->
+  <div class="buscador">
+    <input type="text" id="buscar" placeholder="Buscar hospital o ciudad..." onkeyup="filtrarTabla()">
+  </div>
+
+  <!-- TABLA PRINCIPAL -->
+  <section class="tabla">
+    <table>
+      <thead>
+        <tr>
+          <th>Hospital</th>
+          <th>Ciudad</th>
+          <th>Recursos Asignados</th>
+          <th>Recursos Usados</th>
+          <th>Eficiencia</th>
+        </tr>
+      </thead>
+      <tbody id="tablaHospitales">
+        {% for h in hospitales %}
+        {% set eficiencia = (h.recursos_usados / h.recursos_asignados * 100) if h.recursos_asignados > 0 else 0 %}
+        <tr class="{% if eficiencia >= 80 %}verde{% elif eficiencia >= 50 %}amarillo{% else %}rojo{% endif %}">
+          <td>{{ h.nombre }}</td>
+          <td>{{ h.ciudad }}</td>
+          <td>${{ "{:,.0f}".format(h.recursos_asignados) }}</td>
+          <td>${{ "{:,.0f}".format(h.recursos_usados) }}</td>
+          <td>{{ "%.1f"|format(eficiencia) }}%</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </section>
+
+  <!-- BOTONES -->
+  <div style="text-align:center; margin: 20px;">
+    <a href="/" class="btn-volver">⬅️ Volver al inicio</a>
+    <button onclick="exportarTabla()" class="btn-accion" style="display: inline-block; background: #ff9800; color: white; padding: 12px 25px; border-radius: 8px; border: none; cursor: pointer;">Exportar a Excel</button>
+  </div>
+
+  <!-- PIE DE PÁGINA -->
+  <footer>
+    <p>© 2025 Transparencia en Salud | Innovación y datos abiertos 💙</p>
+  </footer>
+
+  <!-- SCRIPT -->
+  <script>
+    // FILTRAR TABLA
+    function filtrarTabla() {
+      const input = document.getElementById("buscar").value.toLowerCase();
+      const filas = document.querySelectorAll("#tablaHospitales tr");
+      filas.forEach(fila => {
+        const texto = fila.textContent.toLowerCase();
+        fila.style.display = texto.includes(input) ? "" : "none";
+      });
+    }
+
+    // EXPORTAR TABLA A CSV
+    function exportarTabla() {
+      let tabla = document.getElementById("tablaHospitales");
+      let filas = tabla.querySelectorAll("tr");
+      let csv = [];
+
+      filas.forEach(fila => {
+        let celdas = fila.querySelectorAll("td, th");
+        let filaDatos = [];
+        celdas.forEach(celda => {
+          filaDatos.push(celda.innerText.replace(/,/g, ""));
+        });
+        csv.push(filaDatos.join(","));
+      });
+
+      let csvArchivo = csv.join("\n");
+      let blob = new Blob([csvArchivo], { type: "text/csv;charset=utf-8;" });
+
+      let enlace = document.createElement("a");
+      let url = URL.createObjectURL(blob);
+      enlace.setAttribute("href", url);
+      enlace.setAttribute("download", "hospitales.csv");
+      enlace.style.visibility = 'hidden';
+      document.body.appendChild(enlace);
+      enlace.click();
+      document.body.removeChild(enlace);
+    }
+  </script>
+</body>
+</html>

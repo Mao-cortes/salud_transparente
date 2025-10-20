@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Transparencia en Salud | Innovación y Confianza</title>
+
+  <!-- CSS externo -->
+  <link rel="stylesheet" href="/static/css/estilos.css">
+
+  <!-- Iconos y fuentes -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+</head>
+
+<body>
+  <!-- ENCABEZADO -->
+  <header class="encabezado">
+    <div class="logo">
+      <i class="fas fa-heartbeat"></i>
+      <span>Transparencia en Salud</span>
+    </div>
+    <nav>
+      <a href="#inicio">Inicio</a>
+      <a href="#noticias">Noticias</a>
+      <a href="#proyectos">Proyectos</a>
+      <button class="btn-explorar" onclick="explorar()">Explorar</button>
+    </nav>
+  </header>
+
+  <!-- HERO con video de fondo -->
+  <section id="inicio" class="hero">
+    <video autoplay muted loop id="videoFondo">
+  <source src="https://videos.pexels.com/video-files/5752729/5752729-hd_1920_1080_30fps.mp4" type="video/mp4">
+  Tu navegador no soporta video en HTML5.
+</video>
+    <div class="overlay">
+      <h1>Un sistema de salud más transparente, conectado y humano</h1>
+      <p>Monitorea recursos, gestiona datos y fortalece la confianza ciudadana en el sector salud.</p>
+      <button class="boton" onclick="explorar()">Explorar Plataforma</button>
+    </div>
+  </section>
+
+  <!-- Sección de noticias -->
+  <section id="noticias" class="seccion">
+    <h2>🩺 Últimas noticias en salud</h2>
+    <div class="cards">
+      <article class="card">
+        <img src="https://images.unsplash.com/photo-1583912267551-9b3b4b8b6a4b?auto=format&fit=crop&w=800&q=80" alt="Hospital moderno">
+        <h3>Digitalización hospitalaria</h3>
+        <p>El 80% de los hospitales públicos migran sus sistemas a la nube con auditoría en tiempo real.</p>
+      </article>
+      <article class="card">
+        <img src="https://images.unsplash.com/photo-1625247447785-f64b82e4a0c7?auto=format&fit=crop&w=800&q=80" alt="IA médica">
+        <h3>IA al servicio de la salud</h3>
+        <p>Colombia lidera Latinoamérica en inteligencia artificial aplicada al diagnóstico médico preventivo.</p>
+      </article>
+      <article class="card">
+        <img src="https://images.unsplash.com/photo-1600959907703-6d7a5a1a1f6b?auto=format&fit=crop&w=800&q=80" alt="Transparencia EPS">
+        <h3>EPS más transparentes</h3>
+        <p>Se implementa un sistema público de seguimiento de pagos, fórmulas y procedimientos médicos.</p>
+      </article>
+    </div>
+  </section>
+
+  <!-- Sección de proyectos -->
+  <section id="proyectos" class="seccion proyectos">
+    <h2>💡 Innovación en marcha</h2>
+    <div class="proyectos-grid">
+      <div class="proyecto">
+        <i class="fas fa-database"></i>
+        <h3>Datos Abiertos</h3>
+        <p>Consulta indicadores, reportes y trazabilidad de recursos públicos del sistema de salud.</p>
+      </div>
+      <div class="proyecto">
+        <i class="fas fa-user-md"></i>
+        <h3>Atención Inteligente</h3>
+        <p>Accede a tu historia clínica, citas y alertas desde una plataforma unificada y segura.</p>
+      </div>
+      <div class="proyecto">
+        <i class="fas fa-chart-line"></i>
+        <h3>Analítica Predictiva</h3>
+        <p>Detecta anomalías financieras y patrones de fraude mediante inteligencia artificial.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- PIE DE PÁGINA -->
+  <footer id="contacto" class="pie">
+    <p>© 2025 Transparencia en Salud | Proyecto colombiano por la innovación pública 💙</p>
+  </footer>
+
+  <script>
+    function explorar() {
+      window.location.href = "/panel";
+    }
+  </script>
+</body>
+</html>
