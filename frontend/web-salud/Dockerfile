@@ -1,20 +1,33 @@
-# Etapa 1: construcción del proyecto Angular
-FROM node:16 AS build
+# Etapa de construcción
+FROM node:16-alpine AS build
 WORKDIR /app
 
-# Copiar solo los package.json primero (mejor caching)
+# Copiar solo los archivos necesarios para la instalación de dependencias
 COPY package*.json ./
-RUN npm install -g @angular/cli@16.2.10
-RUN npm install
+COPY angular.json ./
+COPY tsconfig*.json ./
 
-# Copiar todo el proyecto
+# Instalar dependencias
+RUN npm ci
+
+# Copiar el resto de los archivos del proyecto
 COPY . .
 
-# Construir para producción
-RUN ng build --configuration production
+# Construir la aplicación para producción
+RUN npm run build -- --configuration production
 
-# Etapa 2: servir la aplicación con Nginx
-FROM nginx:alpine
-COPY --from=build /app/dist/web-salud /usr/share/nginx/html
-EXPOSE 80
-CMD ["nginx", "-g", "daemon off;"]
+# Etapa de producción
+FROM node:16-alpine
+WORKDIR /app
+
+# Instalar un servidor ligero
+RUN npm install -g serve
+
+# Copiar los archivos construidos desde la etapa de construcción
+COPY --from=build /app/dist/web-salud ./dist
+
+# Exponer el puerto 4200
+EXPOSE 4200
+# Comando para servir la aplicación
+CMD ["serve", "-s", "dist", "-l", "4200"]
+

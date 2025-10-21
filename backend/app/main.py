@@ -1,12 +1,11 @@
-from fastapi import FastAPI, Request, Depends
+from fastapi import FastAPI, Request, Depends, HTTPException
 from fastapi.templating import Jinja2Templates
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, JSONResponse
 from sqlalchemy.orm import Session
 from .database import Base, engine, SessionLocal
 from .models import Hospital
 from fastapi.staticfiles import StaticFiles
-from .models import Hospital
-
+from pydantic import BaseModel
 # Crear tablas
 Base.metadata.create_all(bind=engine)
 
@@ -25,6 +24,13 @@ def get_db():
         yield db
     finally:
         db.close()
+
+# Modelo Pydantic para la validación de datos
+class HospitalCreate(BaseModel):
+    nombre: str
+    ciudad: str
+    recursos_asignados: float
+    recursos_usados: float
 
 # Página principal
 @app.get("/", response_class=HTMLResponse)
@@ -51,7 +57,34 @@ def panel(request: Request, db: Session = Depends(get_db)):
             "porcentaje": porcentaje
         }
     )
-@app.get("/productos")
-async def obtener_productos(db: Session = Depends(get_db)):
-    productos = db.query(Producto).all()
-    return productos
+
+# Agregar hospital
+@app.post("/agregar_hospital")
+def agregar_hospital(hospital: HospitalCreate, db: Session = Depends(get_db)):
+    nuevo_hospital = Hospital(**hospital.dict())
+    db.add(nuevo_hospital)
+    db.commit()
+    db.refresh(nuevo_hospital)
+    return JSONResponse(content={"success": True, "id": nuevo_hospital.id})
+
+# Actualizar hospital
+@app.put("/actualizar_hospital/{hospital_id}")
+def actualizar_hospital(hospital_id: int, hospital: HospitalCreate, db: Session = Depends(get_db)):
+    db_hospital = db.query(Hospital).filter(Hospital.id == hospital_id).first()
+    if not db_hospital:
+        raise HTTPException(status_code=404, detail="Hospital no encontrado")
+    for key, value in hospital.dict().items():
+        setattr(db_hospital, key, value)
+    db.commit()
+    return JSONResponse(content={"success": True})
+
+# Eliminar hospital
+@app.delete("/eliminar_hospital/{hospital_id}")
+def eliminar_hospital(hospital_id: int, db: Session = Depends(get_db)):
+    db_hospital = db.query(Hospital).filter(Hospital.id == hospital_id).first()
+    if not db_hospital:
+        raise HTTPException(status_code=404, detail="Hospital no encontrado")
+    db.delete(db_hospital)
+    db.commit()
+    return JSONResponse(content={"success": True})
+
