@@ -11,6 +11,6 @@ database_backup.db
 # Entornos virtuales
 venv/
 .env
-
+#.env.example
 # Otros archivos temporales
 *.log

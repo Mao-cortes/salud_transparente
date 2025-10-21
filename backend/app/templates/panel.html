@@ -42,51 +42,76 @@
     <input type="text" id="buscar" placeholder="Buscar hospital o ciudad..." onkeyup="filtrarTabla()">
   </div>
 
-  <!-- TABLA PRINCIPAL -->
-  <section class="tabla">
-    <table>
-      <thead>
-        <tr>
-          <th>Hospital</th>
-          <th>Ciudad</th>
-          <th>Recursos Asignados</th>
-          <th>Recursos Usados</th>
-          <th>Eficiencia</th>
-        </tr>
-      </thead>
-      <tbody id="tablaHospitales">
-        {% for h in hospitales %}
-        {% set eficiencia = (h.recursos_usados / h.recursos_asignados * 100) if h.recursos_asignados > 0 else 0 %}
-        <tr class="{% if eficiencia >= 80 %}verde{% elif eficiencia >= 50 %}amarillo{% else %}rojo{% endif %}">
-          <td>{{ h.nombre }}</td>
-          <td>{{ h.ciudad }}</td>
-          <td>${{ "{:,.0f}".format(h.recursos_asignados) }}</td>
-          <td>${{ "{:,.0f}".format(h.recursos_usados) }}</td>
-          <td>{{ "%.1f"|format(eficiencia) }}%</td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </section>
+    <!-- BOTÓN PARA AGREGAR HOSPITAL -->
+    <div class="botones">
+        <button class="btn" onclick="mostrarFormulario()" style="display: inline-block; background: #00BFA6; color: white; padding: 12px 25px; border-radius: 8px; border: none; cursor: pointer; text-decoration: none; font-size: 14px; margin: 5px;">Agregar Hospital/Clínica</button>
+    </div>
 
-  <!-- BOTONES -->
-  <!-- BOTONES -->
-<div style="text-align:center; margin: 20px;">
-  <!-- Botón Volver al inicio -->
-  <a href="/" 
-     style="display:inline-block; background:#578d6e; color:white; padding:12px 25px; 
-            border-radius:8px; text-decoration:none; margin-right:10px;">
-    ⬅️ Volver al inicio
-  </a>
+    <!-- TABLA PRINCIPAL -->
+    <section class="tabla">
+        <table>
+            <thead>
+                <tr>
+                    <th>Hospital</th>
+                    <th>Ciudad</th>
+                    <th>Recursos Asignados</th>
+                    <th>Recursos Usados</th>
+                    <th>Eficiencia</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="tablaHospitales">
+                {% for h in hospitales %}
+                {% set eficiencia = (h.recursos_usados / h.recursos_asignados * 100) if h.recursos_asignados > 0 else 0 %}
+                <tr class="{% if eficiencia >= 80 %}verde{% elif eficiencia >= 50 %}amarillo{% else %}rojo{% endif %}">
+                    <td>{{ h.nombre }}</td>
+                    <td>{{ h.ciudad }}</td>
+                    <td>${{ "{:,.0f}".format(h.recursos_asignados) }}</td>
+                    <td>${{ "{:,.0f}".format(h.recursos_usados) }}</td>
+                    <td>{{ "%.1f"|format(eficiencia) }}%</td>
+                    <td>
+                        <button class="btn btn-edit" onclick="editarHospital({{ h.id }}, '{{ h.nombre }}', '{{ h.ciudad }}', {{ h.recursos_asignados }}, {{ h.recursos_usados }})" style="background-color: #4CAF50; color: white; padding: 8px 15px; border: none; border-radius: 4px; cursor: pointer;">Editar</button>
+                        <button class="btn btn-delete" onclick="eliminarHospital({{ h.id }})" style="background-color: #f44336; color: white; padding: 8px 15px; border: none; border-radius: 4px; cursor: pointer;">Eliminar</button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </section>
 
-  <!-- Botón Exportar a Excel -->
-  <button onclick="exportarTabla()" 
-          style="display:inline-block; background:#00ff1e; color:white; 
-                 padding:12px 25px; border-radius:8px; border:none; cursor:pointer;">
-    Exportar a Excel
-  </button>
-</div>
+    <!-- BOTONES -->
+    <div class="botones">
+        <a href="/" class="btn">⬅️ Volver al inicio</a>
+        <button class="btn" onclick="exportarTabla()">Exportar a Excel</button>
+    </div>
 
+    <!-- MODAL PARA AGREGAR/EDITAR HOSPITAL -->
+    <div id="hospitalModal" class="modal" style="display: none; position: fixed; z-index: 1; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.4);">
+        <div class="modal-content" style="background-color: #fefefe; margin: 15% auto; padding: 20px; border: 1px solid #888; width: 80%; max-width: 500px; border-radius: 5px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+            <span class="close" onclick="cerrarModal()" style="color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer;">&times;</span>
+            <h2 id="modalTitle" style="margin-top: 0; color: #333;">Agregar Hospital/Clínica</h2>
+            <form id="hospitalForm">
+                <input type="hidden" id="hospitalId" name="id">
+                <div style="margin-bottom: 15px;">
+                    <label for="nombre" style="display: block; margin-bottom: 5px; font-weight: bold; color: #555;">Nombre:</label>
+                    <input type="text" id="nombre" name="nombre" required style="width: 100%; padding: 8px; margin: 8px 0; box-sizing: border-box; border: 1px solid #ddd; border-radius: 4px;">
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <label for="ciudad" style="display: block; margin-bottom: 5px; font-weight: bold; color: #555;">Ciudad:</label>
+                    <input type="text" id="ciudad" name="ciudad" required style="width: 100%; padding: 8px; margin: 8px 0; box-sizing: border-box; border: 1px solid #ddd; border-radius: 4px;">
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <label for="recursos_asignados" style="display: block; margin-bottom: 5px; font-weight: bold; color: #555;">Recursos Asignados:</label>
+                    <input type="number" id="recursos_asignados" name="recursos_asignados" required style="width: 100%; padding: 8px; margin: 8px 0; box-sizing: border-box; border: 1px solid #ddd; border-radius: 4px;">
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <label for="recursos_usados" style="display: block; margin-bottom: 5px; font-weight: bold; color: #555;">Recursos Usados:</label>
+                    <input type="number" id="recursos_usados" name="recursos_usados" required style="width: 100%; padding: 8px; margin: 8px 0; box-sizing: border-box; border: 1px solid #ddd; border-radius: 4px;">
+                </div>
+                <button type="submit" style="background-color: #4CAF50; color: white; padding: 14px 20px; margin: 8px 0; border: none; cursor: pointer; width: 100%; border-radius: 4px;">Guardar</button>
+            </form>
+        </div>
+    </div>
 
   <!-- PIE DE PÁGINA -->
   <footer>
@@ -110,7 +135,6 @@
       let tabla = document.getElementById("tablaHospitales");
       let filas = tabla.querySelectorAll("tr");
       let csv = [];
-
       filas.forEach(fila => {
         let celdas = fila.querySelectorAll("td, th");
         let filaDatos = [];
@@ -119,10 +143,8 @@
         });
         csv.push(filaDatos.join(","));
       });
-
       let csvArchivo = csv.join("\n");
       let blob = new Blob([csvArchivo], { type: "text/csv;charset=utf-8;" });
-
       let enlace = document.createElement("a");
       let url = URL.createObjectURL(blob);
       enlace.setAttribute("href", url);
@@ -132,6 +154,96 @@
       enlace.click();
       document.body.removeChild(enlace);
     }
+
+        // ELIMINAR HOSPITAL
+        function eliminarHospital(id) {
+            if (confirm("¿Estás seguro de que quieres eliminar este hospital?")) {
+            fetch(`/eliminar_hospital/${id}`, { method: 'DELETE' })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        document.querySelector(`tr[data-id="${id}"]`).remove();
+                    } else {
+                        alert("Error al eliminar el hospital");
+            }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert("Error al eliminar el hospital");
+                });
+        }
+    }
+
+        // MANEJAR ENVÍO DEL FORMULARIO
+        document.getElementById("hospitalForm").onsubmit = function(e) {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const hospitalData = Object.fromEntries(formData.entries());
+
+        const url = hospitalData.id ? `/actualizar_hospital/${hospitalData.id}` : '/agregar_hospital';
+        const method = hospitalData.id ? 'PUT' : 'POST';
+
+        fetch(url, {
+            method: method,
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(hospitalData),
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert("Hospital guardado con éxito");
+                location.reload(); // Recarga la página para mostrar los cambios
+            } else {
+                alert("Error al guardar los datos del hospital");
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert("Error al guardar los datos del hospital");
+        });
+
+            cerrarModal();
+        };
+
+    function mostrarFormulario(id = null, nombre = '', ciudad = '', recursos_asignados = 0, recursos_usados = 0) {
+            const modal = document.getElementById("hospitalModal");
+        const form = document.getElementById("hospitalForm");
+        const title = document.getElementById("modalTitle");
+
+        document.getElementById("hospitalId").value = id || '';
+        document.getElementById("nombre").value = nombre;
+        document.getElementById("ciudad").value = ciudad;
+        document.getElementById("recursos_asignados").value = recursos_asignados;
+        document.getElementById("recursos_usados").value = recursos_usados;
+
+        if (id) {
+            title.textContent = "Editar Hospital/Clínica";
+        } else {
+            title.textContent = "Agregar Hospital/Clínica";
+            }
+
+        modal.style.display = "block";
+        }
+
+    function cerrarModal() {
+        const modal = document.getElementById("hospitalModal");
+        modal.style.display = "none";
+    }
+
+    // Cerrar el modal si se hace clic fuera de él
+    window.onclick = function(event) {
+        const modal = document.getElementById("hospitalModal");
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    }
+
+    function editarHospital(id, nombre, ciudad, recursos_asignados, recursos_usados) {
+        mostrarFormulario(id, nombre, ciudad, recursos_asignados, recursos_usados);
+    }
   </script>
 </body>
 </html>
+
