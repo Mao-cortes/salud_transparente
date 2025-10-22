@@ -1,8 +1,19 @@
-fastapi
-uvicorn
-sqlalchemy
-pydantic
-pandas
-openpyxl
-python-multipart
-jinja2
+# API y servidor web
+fastapi==0.103.1
+uvicorn[standard]==0.23.2
+pydantic==2.4.2
+python-multipart==0.0.6  # Para manejo de formularios y archivos
+jinja2==3.1.2  # Para plantillas
+
+# Base de datos
+sqlalchemy==2.0.21
+
+# Procesamiento de datos
+pandas==2.1.1
+openpyxl==3.1.2  # Para manejo de archivos Excel
+
+# Utilidades y herramientas 
+python-dotenv==1.0.0  # Para variables de entorno
+requests==2.31.0  # Para llamadas HTTP
+pytest==7.4.2  # Para pruebas
+
