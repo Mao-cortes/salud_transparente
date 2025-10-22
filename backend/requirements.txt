@@ -5,6 +5,12 @@ pydantic==2.4.2
 python-multipart==0.0.6  # Para manejo de formularios y archivos
 jinja2==3.1.2  # Para plantillas
 
+# Seguridad y autenticación
+passlib[bcrypt]==1.7.4  # Para hash de contraseñas
+bcrypt>=4.0.0,<5.0.0  # Versión estable de bcrypt para compatibilidad
+python-jose[cryptography]==3.3.0  # Para JWT
+email-validator==2.0.0  # Para validación de emails en Pydantic
+
 # Base de datos
 sqlalchemy==2.0.21
 

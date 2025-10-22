@@ -14,38 +14,146 @@
       <i class="fas fa-heartbeat"></i>
       <span>Transparencia en Salud</span>
     </div>
-    <nav>
-      <a href="/">Inicio</a>
-      <a href="#reportes">Reportes</a>
-      <a href="#contacto">Contacto</a>
-    </nav>
+    <div class="nav-container">
+      <nav class="main-nav">
+        <a href="/" class="nav-link">
+          <i class="fas fa-home"></i>
+          <span>Inicio</span>
+        </a>
+        <a href="#dashboard" class="nav-link active">
+          <i class="fas fa-chart-bar"></i>
+          <span>Dashboard</span>
+        </a>
+        <a href="#reportes" class="nav-link">
+          <i class="fas fa-file-alt"></i>
+          <span>Reportes</span>
+        </a>
+        <a href="#contacto" class="nav-link">
+          <i class="fas fa-envelope"></i>
+          <span>Contacto</span>
+        </a>
+      </nav>
+      <div class="user-menu">
+        <div class="user-info">
+          <i class="fas fa-user-circle"></i>
+          <span class="user-name">{{ usuario.nombre }}</span>
+          <span class="user-email">{{ usuario.email }}</span>
+        </div>
+        <div class="user-actions">
+          <a href="/logout" class="logout-btn" title="Cerrar sesión">
+            <i class="fas fa-sign-out-alt"></i>
+            <span>Salir</span>
+          </a>
+        </div>
+      </div>
+    </div>
   </header>
 
-  <!-- SECCIÓN DE RESUMEN -->
+  <!-- BARRA DE NAVEGACIÓN INTERNA -->
+  <div class="breadcrumb">
+    <a href="/">Inicio</a>
+    <i class="fas fa-chevron-right"></i>
+    <span>Panel de Control</span>
+  </div>
+
+  <!-- TÍTULO DE SECCIÓN -->
+  <div class="page-header">
+    <h1>
+      <i class="fas fa-tachometer-alt"></i>
+      Dashboard - Sistema de Transparencia
+    </h1>
+    <p class="subtitle">Monitoreo en tiempo real de recursos hospitalarios</p>
+  </div>
+
+  <!-- SECCIÓN DE RESUMEN MEJORADA -->
   <section class="resumen">
-    <div class="card">
-      <h3>Total Asignado</h3>
-      <p>${{ "{:,.0f}".format(total_asignado) }}</p>
+    <div class="card stats-card">
+      <div class="card-icon">
+        <i class="fas fa-dollar-sign"></i>
+      </div>
+      <div class="card-content">
+        <h3>Total Asignado</h3>
+        <p class="stat-value">${{ "{:,.0f}".format(total_asignado) }}</p>
+        <small class="stat-label">Recursos disponibles</small>
+      </div>
     </div>
-    <div class="card">
-      <h3>Total Usado</h3>
-      <p>${{ "{:,.0f}".format(total_usado) }}</p>
+    <div class="card stats-card">
+      <div class="card-icon">
+        <i class="fas fa-chart-line"></i>
+      </div>
+      <div class="card-content">
+        <h3>Total Usado</h3>
+        <p class="stat-value">${{ "{:,.0f}".format(total_usado) }}</p>
+        <small class="stat-label">Recursos utilizados</small>
+      </div>
     </div>
-    <div class="card">
-      <h3>Ejecución</h3>
-      <p>{{ porcentaje }}%</p>
+    <div class="card stats-card">
+      <div class="card-icon efficiency-icon">
+        <i class="fas fa-percentage"></i>
+      </div>
+      <div class="card-content">
+        <h3>Eficiencia Global</h3>
+        <p class="stat-value efficiency-value">{{ porcentaje }}%</p>
+        <small class="stat-label">Porcentaje de ejecución</small>
+        <div class="progress-bar">
+          <div class="progress-fill" style="width: {{ porcentaje }}%;"></div>
+        </div>
+      </div>
+    </div>
+    <div class="card stats-card">
+      <div class="card-icon">
+        <i class="fas fa-hospital"></i>
+      </div>
+      <div class="card-content">
+        <h3>Total Hospitales</h3>
+        <p class="stat-value">{{ hospitales|length }}</p>
+        <small class="stat-label">Centros registrados</small>
+      </div>
     </div>
   </section>
 
-  <!-- BUSCADOR -->
-  <div class="buscador">
-    <input type="text" id="buscar" placeholder="Buscar hospital o ciudad..." onkeyup="filtrarTabla()">
-  </div>
-
-    <!-- BOTÓN PARA AGREGAR HOSPITAL -->
-    <div class="botones">
-        <button class="btn" onclick="mostrarFormulario()" style="display: inline-block; background: #00BFA6; color: white; padding: 12px 25px; border-radius: 8px; border: none; cursor: pointer; text-decoration: none; font-size: 14px; margin: 5px;">Agregar Hospital/Clínica</button>
+  <!-- HERRAMIENTAS Y FILTROS -->
+  <div class="tools-section">
+    <div class="search-section">
+      <div class="search-container">
+        <i class="fas fa-search"></i>
+        <input type="text" id="buscar" placeholder="Buscar hospital o ciudad..." onkeyup="filtrarTabla()">
+      </div>
+      <div class="filter-options">
+        <select id="filtroEficiencia" onchange="filtrarPorEficiencia()" class="filter-select">
+          <option value="todos">Todas las eficiencias</option>
+          <option value="alta">Alta eficiencia (≥80%)</option>
+          <option value="media">Media eficiencia (50-79%)</option>
+          <option value="baja">Baja eficiencia (<50%)</option>
+        </select>
+        <select id="filtroCiudad" onchange="filtrarPorCiudad()" class="filter-select">
+          <option value="todas">Todas las ciudades</option>
+          {% set ciudades = hospitales | map(attribute='ciudad') | unique | list %}
+          {% for ciudad in ciudades %}
+          <option value="{{ ciudad }}">{{ ciudad }}</option>
+          {% endfor %}
+        </select>
+      </div>
     </div>
+    <div class="action-buttons">
+      <button class="btn btn-primary" onclick="mostrarFormulario()">
+        <i class="fas fa-plus"></i>
+        <span>Agregar Hospital</span>
+      </button>
+      <button class="btn btn-secondary" onclick="exportarTabla()">
+        <i class="fas fa-download"></i>
+        <span>Exportar Excel</span>
+      </button>
+      <button class="btn btn-info" onclick="mostrarEstadisticas()">
+        <i class="fas fa-chart-pie"></i>
+        <span>Estadísticas</span>
+      </button>
+      <button class="btn btn-outline" onclick="limpiarFiltros()" title="Limpiar todos los filtros">
+        <i class="fas fa-eraser"></i>
+        <span>Limpiar Filtros</span>
+      </button>
+    </div>
+  </div>
 
     <!-- TABLA PRINCIPAL -->
     <section class="tabla">
@@ -63,15 +171,15 @@
             <tbody id="tablaHospitales">
                 {% for h in hospitales %}
                 {% set eficiencia = (h.recursos_usados / h.recursos_asignados * 100) if h.recursos_asignados > 0 else 0 %}
-                <tr class="{% if eficiencia >= 80 %}verde{% elif eficiencia >= 50 %}amarillo{% else %}rojo{% endif %}">
+                <tr class="{% if eficiencia >= 80 %}verde{% elif eficiencia >= 50 %}amarillo{% else %}rojo{% endif %}" data-id="{{ h.id }}">
                     <td>{{ h.nombre }}</td>
                     <td>{{ h.ciudad }}</td>
                     <td>${{ "{:,.0f}".format(h.recursos_asignados) }}</td>
                     <td>${{ "{:,.0f}".format(h.recursos_usados) }}</td>
                     <td>{{ "%.1f"|format(eficiencia) }}%</td>
                     <td>
-                        <button class="btn btn-edit" onclick="editarHospital({{ h.id }}, '{{ h.nombre }}', '{{ h.ciudad }}', {{ h.recursos_asignados }}, {{ h.recursos_usados }})" style="background-color: #4CAF50; color: white; padding: 8px 15px; border: none; border-radius: 4px; cursor: pointer;">Editar</button>
-                        <button class="btn btn-delete" onclick="eliminarHospital({{ h.id }})" style="background-color: #f44336; color: white; padding: 8px 15px; border: none; border-radius: 4px; cursor: pointer;">Eliminar</button>
+                        <button class="btn btn-edit" onclick="editarHospital({{ h.id }}, {{ h.nombre|tojson }}, {{ h.ciudad|tojson }}, {{ h.recursos_asignados }}, {{ h.recursos_usados }})">Editar</button>
+                        <button class="btn btn-delete" onclick="eliminarHospital({{ h.id }})">Eliminar</button>
                     </td>
                 </tr>
                 {% endfor %}
@@ -79,10 +187,20 @@
         </table>
     </section>
 
-    <!-- BOTONES -->
-    <div class="botones">
-        <a href="/" class="btn">⬅️ Volver al inicio</a>
-        <button class="btn" onclick="exportarTabla()">Exportar a Excel</button>
+    <!-- ACCIONES ADICIONALES -->
+    <div class="additional-actions">
+        <div class="left-actions">
+            <a href="/" class="btn btn-outline">
+                <i class="fas fa-home"></i>
+                <span>Volver al inicio</span>
+            </a>
+        </div>
+        <div class="right-actions">
+            <button class="btn btn-success" onclick="refrescarDatos()">
+                <i class="fas fa-sync-alt"></i>
+                <span>Actualizar datos</span>
+            </button>
+        </div>
     </div>
 
     <!-- MODAL PARA AGREGAR/EDITAR HOSPITAL -->
@@ -120,29 +238,104 @@
 
   <!-- SCRIPT -->
   <script>
-    // FILTRAR TABLA
-    function filtrarTabla() {
+    // APLICAR TODOS LOS FILTROS
+    function aplicarFiltros() {
       const input = document.getElementById("buscar").value.toLowerCase();
+      const filtroEficiencia = document.getElementById("filtroEficiencia").value;
+      const filtroCiudad = document.getElementById("filtroCiudad").value;
       const filas = document.querySelectorAll("#tablaHospitales tr");
+      
       filas.forEach(fila => {
-        const texto = fila.textContent.toLowerCase();
-        fila.style.display = texto.includes(input) ? "" : "none";
+        let mostrar = true;
+        
+        // Filtro por texto
+        if (input && !fila.textContent.toLowerCase().includes(input)) {
+          mostrar = false;
+        }
+        
+        // Filtro por eficiencia
+        if (mostrar && filtroEficiencia !== "todos") {
+          const eficienciaTexto = fila.cells[4].textContent;
+          const eficiencia = parseFloat(eficienciaTexto.replace('%', ''));
+          
+          switch(filtroEficiencia) {
+            case "alta":
+              mostrar = eficiencia >= 80;
+              break;
+            case "media":
+              mostrar = eficiencia >= 50 && eficiencia < 80;
+              break;
+            case "baja":
+              mostrar = eficiencia < 50;
+              break;
+          }
+        }
+        
+        // Filtro por ciudad
+        if (mostrar && filtroCiudad !== "todas") {
+          const ciudadHospital = fila.cells[1].textContent;
+          mostrar = ciudadHospital === filtroCiudad;
+        }
+        
+        fila.style.display = mostrar ? "" : "none";
       });
+      
+      actualizarContadorResultados();
+    }
+
+    // FILTRAR TABLA POR TEXTO
+    function filtrarTabla() {
+      aplicarFiltros();
+    }
+
+    // FILTRAR POR EFICIENCIA
+    function filtrarPorEficiencia() {
+      aplicarFiltros();
+    }
+
+    // FILTRAR POR CIUDAD
+    function filtrarPorCiudad() {
+      aplicarFiltros();
+    }
+
+    // ACTUALIZAR CONTADOR DE RESULTADOS
+    function actualizarContadorResultados() {
+      const filas = document.querySelectorAll("#tablaHospitales tr");
+      const filasVisibles = Array.from(filas).filter(fila => fila.style.display !== "none");
+      
+      // Crear o actualizar el contador si no existe
+      let contador = document.getElementById("resultCounter");
+      if (!contador) {
+        contador = document.createElement("div");
+        contador.id = "resultCounter";
+        contador.className = "result-counter";
+        document.querySelector(".tools-section").appendChild(contador);
+      }
+      
+      contador.textContent = `Mostrando ${filasVisibles.length} de ${filas.length} hospitales`;
     }
 
     // EXPORTAR TABLA A CSV
     function exportarTabla() {
-      let tabla = document.getElementById("tablaHospitales");
-      let filas = tabla.querySelectorAll("tr");
       let csv = [];
+      
+      // Agregar encabezados
+      csv.push("Hospital,Ciudad,Recursos Asignados,Recursos Usados,Eficiencia");
+      
+      // Agregar datos de filas visibles
+      const filas = document.querySelectorAll("#tablaHospitales tr");
       filas.forEach(fila => {
-        let celdas = fila.querySelectorAll("td, th");
-        let filaDatos = [];
-        celdas.forEach(celda => {
-          filaDatos.push(celda.innerText.replace(/,/g, ""));
-        });
-        csv.push(filaDatos.join(","));
+        if (fila.style.display !== "none") {
+          let filaDatos = [];
+          // Solo tomar las primeras 5 columnas (excluir la columna de acciones)
+          for (let i = 0; i < 5; i++) {
+            let texto = fila.cells[i].innerText.replace(/,/g, "").replace(/\$/g, "");
+            filaDatos.push(texto);
+          }
+          csv.push(filaDatos.join(","));
+        }
       });
+      
       let csvArchivo = csv.join("\n");
       let blob = new Blob([csvArchivo], { type: "text/csv;charset=utf-8;" });
       let enlace = document.createElement("a");
@@ -155,94 +348,196 @@
       document.body.removeChild(enlace);
     }
 
-        // ELIMINAR HOSPITAL
-        function eliminarHospital(id) {
-            if (confirm("¿Estás seguro de que quieres eliminar este hospital?")) {
-            fetch(`/eliminar_hospital/${id}`, { method: 'DELETE' })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        document.querySelector(`tr[data-id="${id}"]`).remove();
-                    } else {
-                        alert("Error al eliminar el hospital");
+    // ELIMINAR HOSPITAL
+    function eliminarHospital(id) {
+      if (confirm("¿Estás seguro de que quieres eliminar este hospital?")) {
+        fetch(`/eliminar_hospital/${id}`, { method: 'DELETE' })
+          .then(response => response.json())
+          .then(data => {
+            if (data.success) {
+              document.querySelector(`tr[data-id="${id}"]`).remove();
+            } else {
+              alert("Error al eliminar el hospital");
             }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert("Error al eliminar el hospital");
-                });
-        }
+          })
+          .catch(error => {
+            console.error('Error:', error);
+            alert("Error al eliminar el hospital");
+          });
+      }
     }
 
-        // MANEJAR ENVÍO DEL FORMULARIO
-        document.getElementById("hospitalForm").onsubmit = function(e) {
-            e.preventDefault();
-            const formData = new FormData(e.target);
-            const hospitalData = Object.fromEntries(formData.entries());
+    // MANEJAR ENVÍO DEL FORMULARIO
+    document.getElementById("hospitalForm").onsubmit = function(e) {
+      e.preventDefault();
+      const formData = new FormData(e.target);
+      const hospitalData = Object.fromEntries(formData.entries());
 
-        const url = hospitalData.id ? `/actualizar_hospital/${hospitalData.id}` : '/agregar_hospital';
-        const method = hospitalData.id ? 'PUT' : 'POST';
+      // Validaciones básicas
+      if (!hospitalData.nombre || !hospitalData.ciudad) {
+        alert("Por favor, complete todos los campos requeridos.");
+        return;
+      }
 
-        fetch(url, {
-            method: method,
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(hospitalData),
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                alert("Hospital guardado con éxito");
-                location.reload(); // Recarga la página para mostrar los cambios
-            } else {
-                alert("Error al guardar los datos del hospital");
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert("Error al guardar los datos del hospital");
-        });
+      const recursosAsignados = parseFloat(hospitalData.recursos_asignados);
+      const recursosUsados = parseFloat(hospitalData.recursos_usados);
 
-            cerrarModal();
-        };
+      if (recursosAsignados < 0 || recursosUsados < 0) {
+        alert("Los recursos no pueden ser negativos.");
+        return;
+      }
+
+      if (recursosUsados > recursosAsignados) {
+        if (!confirm("Los recursos usados son mayores a los asignados. ¿Desea continuar?")) {
+          return;
+        }
+      }
+
+      const url = hospitalData.id ? `/actualizar_hospital/${hospitalData.id}` : '/agregar_hospital';
+      const method = hospitalData.id ? 'PUT' : 'POST';
+
+      fetch(url, {
+        method: method,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(hospitalData),
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          alert("Hospital guardado con éxito");
+          cerrarModal();
+          location.reload(); // Recarga la página para mostrar los cambios
+        } else {
+          alert("Error al guardar los datos del hospital");
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        alert("Error al guardar los datos del hospital");
+      });
+    };
 
     function mostrarFormulario(id = null, nombre = '', ciudad = '', recursos_asignados = 0, recursos_usados = 0) {
-            const modal = document.getElementById("hospitalModal");
-        const form = document.getElementById("hospitalForm");
-        const title = document.getElementById("modalTitle");
+      const modal = document.getElementById("hospitalModal");
+      const form = document.getElementById("hospitalForm");
+      const title = document.getElementById("modalTitle");
 
-        document.getElementById("hospitalId").value = id || '';
-        document.getElementById("nombre").value = nombre;
-        document.getElementById("ciudad").value = ciudad;
-        document.getElementById("recursos_asignados").value = recursos_asignados;
-        document.getElementById("recursos_usados").value = recursos_usados;
+      document.getElementById("hospitalId").value = id || '';
+      document.getElementById("nombre").value = nombre;
+      document.getElementById("ciudad").value = ciudad;
+      document.getElementById("recursos_asignados").value = recursos_asignados;
+      document.getElementById("recursos_usados").value = recursos_usados;
 
-        if (id) {
-            title.textContent = "Editar Hospital/Clínica";
-        } else {
-            title.textContent = "Agregar Hospital/Clínica";
-            }
+      if (id) {
+        title.textContent = "Editar Hospital/Clínica";
+      } else {
+        title.textContent = "Agregar Hospital/Clínica";
+      }
 
-        modal.style.display = "block";
-        }
+      modal.style.display = "block";
+    }
 
     function cerrarModal() {
-        const modal = document.getElementById("hospitalModal");
-        modal.style.display = "none";
+      const modal = document.getElementById("hospitalModal");
+      modal.style.display = "none";
     }
 
     // Cerrar el modal si se hace clic fuera de él
     window.onclick = function(event) {
-        const modal = document.getElementById("hospitalModal");
-        if (event.target == modal) {
-            modal.style.display = "none";
-        }
+      const modal = document.getElementById("hospitalModal");
+      if (event.target == modal) {
+        modal.style.display = "none";
+      }
     }
 
     function editarHospital(id, nombre, ciudad, recursos_asignados, recursos_usados) {
-        mostrarFormulario(id, nombre, ciudad, recursos_asignados, recursos_usados);
+      mostrarFormulario(id, nombre, ciudad, recursos_asignados, recursos_usados);
     }
+
+    // MOSTRAR ESTADÍSTICAS
+    function mostrarEstadisticas() {
+      const filas = document.querySelectorAll("#tablaHospitales tr");
+      const datos = Array.from(filas).map(fila => {
+        const eficienciaTexto = fila.cells[4].textContent;
+        return parseFloat(eficienciaTexto.replace('%', ''));
+      });
+
+      const promedio = datos.reduce((a, b) => a + b, 0) / datos.length;
+      const maxEficiencia = Math.max(...datos);
+      const minEficiencia = Math.min(...datos);
+      
+      const altaEficiencia = datos.filter(e => e >= 80).length;
+      const mediaEficiencia = datos.filter(e => e >= 50 && e < 80).length;
+      const bajaEficiencia = datos.filter(e => e < 50).length;
+
+      alert(`Estadísticas del Sistema:
+      
+📊 Eficiencia promedio: ${promedio.toFixed(1)}%
+⬆️ Máxima eficiencia: ${maxEficiencia}%
+⬇️ Mínima eficiencia: ${minEficiencia}%
+
+ Alta eficiencia (≥80%): ${altaEficiencia} hospitales
+ Media eficiencia (50-79%): ${mediaEficiencia} hospitales  
+ Baja eficiencia (<50%): ${bajaEficiencia} hospitales`);
+    }
+
+    // LIMPIAR FILTROS
+    function limpiarFiltros() {
+      document.getElementById("buscar").value = "";
+      document.getElementById("filtroEficiencia").value = "todos";
+      document.getElementById("filtroCiudad").value = "todas";
+      aplicarFiltros();
+    }
+
+    // REFRESCAR DATOS
+    function refrescarDatos() {
+      const boton = document.querySelector('.btn-success');
+      const icono = boton.querySelector('i');
+      
+      // Animación de carga
+      icono.classList.remove('fa-sync-alt');
+      icono.classList.add('fa-spinner', 'fa-spin');
+      boton.disabled = true;
+      
+      setTimeout(() => {
+        location.reload();
+      }, 1000);
+    }
+
+    // CONFIRMAR LOGOUT
+    function confirmarLogout(event) {
+      if (!confirm('¿Está seguro de que desea cerrar sesión?')) {
+        event.preventDefault();
+      }
+    }
+
+    // INICIALIZAR EVENTOS AL CARGAR LA PÁGINA
+    document.addEventListener('DOMContentLoaded', function() {
+      // Agregar evento de confirmación al botón de logout
+      const logoutBtn = document.querySelector('.logout-btn');
+      if (logoutBtn) {
+        logoutBtn.addEventListener('click', confirmarLogout);
+      }
+
+      // Inicializar contador de resultados
+      actualizarContadorResultados();
+
+      // Agregar tooltips dinámicos
+      const statsCards = document.querySelectorAll('.stats-card');
+      statsCards.forEach(card => {
+        card.addEventListener('mouseenter', function() {
+          this.style.transform = 'translateY(-5px)';
+          this.style.boxShadow = '0 10px 25px rgba(0,0,0,0.15)';
+        });
+        
+        card.addEventListener('mouseleave', function() {
+          this.style.transform = 'translateY(0)';
+          this.style.boxShadow = '0 4px 12px rgba(0,0,0,0.1)';
+        });
+      });
+    });
   </script>
 </body>
 </html>

@@ -1,0 +1,138 @@
+/* Contenedor principal del formulario */
+.auth-container {
+  max-width: 400px;
+  margin: 80px auto;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+  background: white;
+  transition: transform 0.3s ease;
+}
+
+.auth-container:hover {
+  transform: translateY(-5px);
+}
+
+/* Título del formulario */
+.auth-title {
+  text-align: center;
+  margin-bottom: 30px;
+  color: #2563eb;
+  font-weight: 700;
+}
+
+/* Grupos de formulario */
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: #333;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  font-size: 16px;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+}
+
+/* Campo de contraseña con botón para mostrar/ocultar */
+.password-field {
+  position: relative;
+}
+
+.toggle-password {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #666;
+}
+
+.toggle-password:hover {
+  color: #2563eb;
+}
+
+/* Botón de envío */
+.auth-btn {
+  width: 100%;
+  padding: 12px;
+  background: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s, transform 0.2s;
+}
+
+.auth-btn:hover {
+  background: #1d4ed8;
+  transform: translateY(-2px);
+}
+
+.auth-btn:active {
+  transform: translateY(0);
+}
+
+/* Pie del formulario */
+.auth-footer {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 14px;
+  color: #666;
+}
+
+.auth-footer a {
+  color: #2563eb;
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.3s;
+}
+
+.auth-footer a:hover {
+  color: #1d4ed8;
+  text-decoration: underline;
+}
+
+/* Mensaje de error */
+.error-message {
+  color: #e11d48;
+  margin: 15px 0;
+  text-align: center;
+  padding: 10px;
+  background-color: rgba(225, 29, 72, 0.1);
+  border-radius: 5px;
+  font-size: 14px;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .auth-container {
+    max-width: 90%;
+    margin: 40px auto;
+    padding: 20px;
+  }
+  
+  .form-group input {
+    padding: 10px;
+  }
+  
+  .auth-btn {
+    padding: 10px;
+  }
+}
