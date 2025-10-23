@@ -1,97 +1,103 @@
-/* Estilos para la página de registro */
+:root {
+  --primary-color: #2563eb;
+  --primary-dark: #1d4ed8;
+  --border-color: #ddd;
+  --text-color: #333;
+  --text-muted: #666;
+  --error-color: #e11d48;
+  --success-color: #10b981;
+  --warning-color: #f59e0b;
+  --border-radius: 5px;
+  --transition-fast: 0.2s;
+  --transition-normal: 0.3s;
+}
 
-/* Contenedor principal del formulario */
+/* Contenedor del formulario */
 .auth-container {
+  margin: 126px auto;
+  padding: 25px;
   max-width: 500px;
-  margin: 60px auto;
-  padding: 35px;
   border-radius: 12px;
-  box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
   background: white;
-  transition: transform 0.3s ease;
+  transition: transform var(--transition-normal) ease;
 }
 
 .auth-container:hover {
   transform: translateY(-5px);
 }
 
-/* Título del formulario */
 .auth-title {
   text-align: center;
   margin-bottom: 30px;
-  color: #2563eb;
+  color: var(--primary-color);
   font-weight: 700;
-  font-size: 1.8em;
 }
 
-/* Grupos de formulario */
 .form-group {
-  margin-bottom: 22px;
+  margin-bottom: 20px;
 }
 
 .form-group label {
   display: block;
   margin-bottom: 8px;
   font-weight: 600;
-  color: #333;
+  color: var(--text-color);
 }
 
 .form-group input[type="text"],
 .form-group input[type="email"],
 .form-group input[type="password"] {
   width: 100%;
-  padding: 14px;
-  border: 1px solid #ddd;
-  border-radius: 6px;
+  padding: 12px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
   font-size: 16px;
-  transition: border-color 0.3s, box-shadow 0.3s;
+  transition: border-color var(--transition-normal), box-shadow var(--transition-normal);
 }
 
 .form-group input:focus {
   outline: none;
-  border-color: #2563eb;
+  border-color: var(--primary-color);
   box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
 }
 
-/* Campo de contraseña con botón para mostrar/ocultar */
 .password-field {
   position: relative;
 }
 
 .toggle-password {
   position: absolute;
-  right: 14px;
+  right: 12px;
   top: 50%;
   transform: translateY(-50%);
   cursor: pointer;
-  color: #666;
+  color: var(--text-muted);
+  transition: color var(--transition-normal);
 }
 
 .toggle-password:hover {
-  color: #2563eb;
+  color: var(--primary-color);
 }
 
-/* Indicador de fortaleza de contraseña */
 .password-strength {
   margin-top: 8px;
   font-size: 14px;
   font-weight: 500;
-  height: 20px;
 }
 
 .password-strength.weak {
-  color: #e11d48;
+  color: var(--error-color);
 }
 
 .password-strength.medium {
-  color: #f59e0b;
+  color: var(--warning-color);
 }
 
 .password-strength.strong {
-  color: #10b981;
+  color: var(--success-color);
 }
 
-/* Grupo de checkbox */
 .checkbox-group {
   display: flex;
   align-items: center;
@@ -105,39 +111,37 @@
 }
 
 .checkbox-group label {
-  margin-bottom: 0;
   font-weight: 400;
   cursor: pointer;
 }
 
 .terms-link {
-  color: #2563eb;
+  color: var(--primary-color);
   text-decoration: none;
   font-weight: 600;
-  transition: color 0.3s;
+  transition: color var(--transition-normal);
 }
 
 .terms-link:hover {
+  color: var(--primary-dark);
   text-decoration: underline;
 }
 
-/* Botón de envío */
 .auth-btn {
   width: 100%;
-  padding: 14px;
-  background: #2563eb;
+  padding: 12px;
+  background: var(--primary-color);
   color: white;
   border: none;
-  border-radius: 6px;
+  border-radius: var(--border-radius);
   font-size: 16px;
   font-weight: 600;
   cursor: pointer;
-  transition: background 0.3s, transform 0.2s;
-  margin-top: 10px;
+  transition: background var(--transition-normal), transform var(--transition-fast);
 }
 
 .auth-btn:hover {
-  background: #1d4ed8;
+  background: var(--primary-dark);
   transform: translateY(-2px);
 }
 
@@ -145,57 +149,48 @@
   transform: translateY(0);
 }
 
-/* Pie del formulario */
 .auth-footer {
   text-align: center;
-  margin-top: 25px;
-  font-size: 15px;
-  color: #666;
+  font-size: 14px;
+  color: var(--text-muted);
 }
 
 .auth-footer a {
-  color: #2563eb;
+  color: var(--primary-color);
   text-decoration: none;
   font-weight: 600;
-  transition: color 0.3s;
+  transition: color var(--transition-normal);
 }
 
 .auth-footer a:hover {
-  color: #1d4ed8;
+  color: var(--primary-dark);
   text-decoration: underline;
 }
 
-/* Mensaje de error */
 .error-message {
-  color: #e11d48;
   margin: 15px 0;
+  padding: 10px;
   text-align: center;
-  padding: 12px;
-  background-color: rgba(225, 29, 72, 0.1);
-  border-radius: 6px;
   font-size: 14px;
-  font-weight: 500;
+  color: var(--error-color);
+  background-color: rgba(225, 29, 72, 0.1);
+  border-radius: var(--border-radius);
 }
 
-/* Responsive */
-@media (max-width: 576px) {
+@media (max-width: 480px) {
   .auth-container {
     max-width: 90%;
-    margin: 30px auto;
-    padding: 25px;
+    margin: 40px auto;
+    padding: 20px;
   }
-  
+
   .form-group input[type="text"],
   .form-group input[type="email"],
   .form-group input[type="password"] {
-    padding: 12px;
+    padding: 10px;
   }
-  
+
   .auth-btn {
-    padding: 12px;
-  }
-  
-  .auth-title {
-    font-size: 1.5em;
+    padding: 10px;
   }
 }

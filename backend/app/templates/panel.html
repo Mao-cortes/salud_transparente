@@ -2,10 +2,10 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Panel de Transparencia en Salud 🏥</title>
+  <title>Panel de Transparencia en Salud</title>
   <link rel="stylesheet" href="/static/css/panel.css">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
-  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
   <!-- ENCABEZADO -->
@@ -96,7 +96,7 @@
         <p class="stat-value efficiency-value">{{ porcentaje }}%</p>
         <small class="stat-label">Porcentaje de ejecución</small>
         <div class="progress-bar">
-          <div class="progress-fill" style="width: {{ porcentaje }}%;"></div>
+          <div class="progress-fill" style="width: '{{ porcentaje }}%'"></div>
         </div>
       </div>
     </div>
@@ -155,81 +155,81 @@
     </div>
   </div>
 
-    <!-- TABLA PRINCIPAL -->
-    <section class="tabla">
-        <table>
-            <thead>
-                <tr>
-                    <th>Hospital</th>
-                    <th>Ciudad</th>
-                    <th>Recursos Asignados</th>
-                    <th>Recursos Usados</th>
-                    <th>Eficiencia</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody id="tablaHospitales">
-                {% for h in hospitales %}
-                {% set eficiencia = (h.recursos_usados / h.recursos_asignados * 100) if h.recursos_asignados > 0 else 0 %}
-                <tr class="{% if eficiencia >= 80 %}verde{% elif eficiencia >= 50 %}amarillo{% else %}rojo{% endif %}" data-id="{{ h.id }}">
-                    <td>{{ h.nombre }}</td>
-                    <td>{{ h.ciudad }}</td>
-                    <td>${{ "{:,.0f}".format(h.recursos_asignados) }}</td>
-                    <td>${{ "{:,.0f}".format(h.recursos_usados) }}</td>
-                    <td>{{ "%.1f"|format(eficiencia) }}%</td>
-                    <td>
-                        <button class="btn btn-edit" onclick="editarHospital({{ h.id }}, {{ h.nombre|tojson }}, {{ h.ciudad|tojson }}, {{ h.recursos_asignados }}, {{ h.recursos_usados }})">Editar</button>
-                        <button class="btn btn-delete" onclick="eliminarHospital({{ h.id }})">Eliminar</button>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </section>
+  <!-- TABLA PRINCIPAL -->
+  <section class="tabla">
+      <table>
+          <thead>
+              <tr>
+                  <th>Hospital</th>
+                  <th>Ciudad</th>
+                  <th>Recursos Asignados</th>
+                  <th>Recursos Usados</th>
+                  <th>Eficiencia</th>
+                  <th>Acciones</th>
+              </tr>
+          </thead>
+          <tbody id="tablaHospitales">
+              {% for h in hospitales %}
+              {% set eficiencia = (h.recursos_usados / h.recursos_asignados * 100) if h.recursos_asignados > 0 else 0 %}
+              <tr class="{% if eficiencia >= 80 %}verde{% elif eficiencia >= 50 %}amarillo{% else %}rojo{% endif %}" data-id="{{ h.id }}">
+                  <td>{{ h.nombre }}</td>
+                  <td>{{ h.ciudad }}</td>
+                  <td>${{ "{:,.0f}".format(h.recursos_asignados) }}</td>
+                  <td>${{ "{:,.0f}".format(h.recursos_usados) }}</td>
+                  <td>{{ "%.1f"|format(eficiencia) }}%</td>
+                  <td>
+                      <button class="btn btn-edit" onclick="editarHospital('{{ h.id }}', '{{ h.nombre }}', '{{ h.ciudad }}', '{{ h.recursos_asignados }}', '{{ h.recursos_usados }}')">Editar</button>
+                      <button class="btn btn-delete" onclick="eliminarHospital('{{ h.id }}')">Eliminar</button>
+                  </td>
+              </tr>
+              {% endfor %}
+          </tbody>
+      </table>
+  </section>
 
-    <!-- ACCIONES ADICIONALES -->
-    <div class="additional-actions">
-        <div class="left-actions">
-            <a href="/" class="btn btn-outline">
-                <i class="fas fa-home"></i>
-                <span>Volver al inicio</span>
-            </a>
-        </div>
-        <div class="right-actions">
-            <button class="btn btn-success" onclick="refrescarDatos()">
-                <i class="fas fa-sync-alt"></i>
-                <span>Actualizar datos</span>
-            </button>
-        </div>
-    </div>
+  <!-- ACCIONES ADICIONALES -->
+  <div class="additional-actions">
+      <div class="left-actions">
+          <a href="/" class="btn btn-outline">
+              <i class="fas fa-home"></i>
+              <span>Volver al inicio</span>
+          </a>
+      </div>
+      <div class="right-actions">
+          <button class="btn btn-success" onclick="refrescarDatos()">
+              <i class="fas fa-sync-alt"></i>
+              <span>Actualizar datos</span>
+          </button>
+      </div>
+  </div>
 
-    <!-- MODAL PARA AGREGAR/EDITAR HOSPITAL -->
-    <div id="hospitalModal" class="modal" style="display: none; position: fixed; z-index: 1; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.4);">
-        <div class="modal-content" style="background-color: #fefefe; margin: 15% auto; padding: 20px; border: 1px solid #888; width: 80%; max-width: 500px; border-radius: 5px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
-            <span class="close" onclick="cerrarModal()" style="color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer;">&times;</span>
-            <h2 id="modalTitle" style="margin-top: 0; color: #333;">Agregar Hospital/Clínica</h2>
-            <form id="hospitalForm">
-                <input type="hidden" id="hospitalId" name="id">
-                <div style="margin-bottom: 15px;">
-                    <label for="nombre" style="display: block; margin-bottom: 5px; font-weight: bold; color: #555;">Nombre:</label>
-                    <input type="text" id="nombre" name="nombre" required style="width: 100%; padding: 8px; margin: 8px 0; box-sizing: border-box; border: 1px solid #ddd; border-radius: 4px;">
-                </div>
-                <div style="margin-bottom: 15px;">
-                    <label for="ciudad" style="display: block; margin-bottom: 5px; font-weight: bold; color: #555;">Ciudad:</label>
-                    <input type="text" id="ciudad" name="ciudad" required style="width: 100%; padding: 8px; margin: 8px 0; box-sizing: border-box; border: 1px solid #ddd; border-radius: 4px;">
-                </div>
-                <div style="margin-bottom: 15px;">
-                    <label for="recursos_asignados" style="display: block; margin-bottom: 5px; font-weight: bold; color: #555;">Recursos Asignados:</label>
-                    <input type="number" id="recursos_asignados" name="recursos_asignados" required style="width: 100%; padding: 8px; margin: 8px 0; box-sizing: border-box; border: 1px solid #ddd; border-radius: 4px;">
-                </div>
-                <div style="margin-bottom: 15px;">
-                    <label for="recursos_usados" style="display: block; margin-bottom: 5px; font-weight: bold; color: #555;">Recursos Usados:</label>
-                    <input type="number" id="recursos_usados" name="recursos_usados" required style="width: 100%; padding: 8px; margin: 8px 0; box-sizing: border-box; border: 1px solid #ddd; border-radius: 4px;">
-                </div>
-                <button type="submit" style="background-color: #4CAF50; color: white; padding: 14px 20px; margin: 8px 0; border: none; cursor: pointer; width: 100%; border-radius: 4px;">Guardar</button>
-            </form>
-        </div>
-    </div>
+  <!-- MODAL PARA AGREGAR/EDITAR HOSPITAL -->
+  <div id="hospitalModal" class="modal" style="display: none; position: fixed; z-index: 1; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.4);">
+      <div class="modal-content" style="background-color: #fefefe; margin: 15% auto; padding: 20px; border: 1px solid #888; width: 80%; max-width: 500px; border-radius: 5px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+          <span class="close" onclick="cerrarModal()" style="color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer;">&times;</span>
+          <h2 id="modalTitle" style="margin-top: 0; color: #333;">Agregar Hospital/Clínica</h2>
+          <form id="hospitalForm">
+              <input type="hidden" id="hospitalId" name="id">
+              <div style="margin-bottom: 15px;">
+                  <label for="nombre" style="display: block; margin-bottom: 5px; font-weight: bold; color: #555;">Nombre:</label>
+                  <input type="text" id="nombre" name="nombre" required style="width: 100%; padding: 8px; margin: 8px 0; box-sizing: border-box; border: 1px solid #ddd; border-radius: 4px;">
+              </div>
+              <div style="margin-bottom: 15px;">
+                  <label for="ciudad" style="display: block; margin-bottom: 5px; font-weight: bold; color: #555;">Ciudad:</label>
+                  <input type="text" id="ciudad" name="ciudad" required style="width: 100%; padding: 8px; margin: 8px 0; box-sizing: border-box; border: 1px solid #ddd; border-radius: 4px;">
+              </div>
+              <div style="margin-bottom: 15px;">
+                  <label for="recursos_asignados" style="display: block; margin-bottom: 5px; font-weight: bold; color: #555;">Recursos Asignados:</label>
+                  <input type="number" id="recursos_asignados" name="recursos_asignados" required style="width: 100%; padding: 8px; margin: 8px 0; box-sizing: border-box; border: 1px solid #ddd; border-radius: 4px;">
+              </div>
+              <div style="margin-bottom: 15px;">
+                  <label for="recursos_usados" style="display: block; margin-bottom: 5px; font-weight: bold; color: #555;">Recursos Usados:</label>
+                  <input type="number" id="recursos_usados" name="recursos_usados" required style="width: 100%; padding: 8px; margin: 8px 0; box-sizing: border-box; border: 1px solid #ddd; border-radius: 4px;">
+              </div>
+              <button type="submit" style="background-color: #4CAF50; color: white; padding: 14px 20px; margin: 8px 0; border: none; cursor: pointer; width: 100%; border-radius: 4px;">Guardar</button>
+          </form>
+      </div>
+  </div>
 
   <!-- PIE DE PÁGINA -->
   <footer>

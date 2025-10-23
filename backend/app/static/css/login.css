@@ -1,10 +1,7 @@
 /* Contenedor principal del formulario */
 .auth-container {
-  max-width: 400px;
-  margin: 80px auto;
-  padding: 30px;
-  border-radius: 10px;
-  box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+  border-radius: 12px;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.15);
   background: white;
   transition: transform 0.3s ease;
 }
@@ -91,6 +88,7 @@
 
 /* Pie del formulario */
 .auth-footer {
+  bottom: 0px;
   text-align: center;
   margin-top: 20px;
   font-size: 14px;

@@ -41,12 +41,23 @@ class HospitalCreate(BaseModel):
 
 # Página principal
 @app.get("/", response_class=HTMLResponse)
-def inicio(request: Request):
+async def inicio(request: Request, db: Session = Depends(get_db)):
+    # Si el usuario está autenticado, redirigir al panel
+    user = await get_current_user_from_cookie(request, db)
+    if user:
+        return RedirectResponse(url="/panel", status_code=status.HTTP_303_SEE_OTHER)
+    
+    # Si no está autenticado, mostrar landing page
     return templates.TemplateResponse("index.html", {"request": request})
 
 # Ruta de login
 @app.get("/login", response_class=HTMLResponse)
-def login_page(request: Request, error: Optional[str] = None):
+async def login_page(request: Request, error: Optional[str] = None, db: Session = Depends(get_db)):
+    # Si el usuario está autenticado, redirigir al panel
+    user = await get_current_user_from_cookie(request, db)
+    if user:
+        return RedirectResponse(url="/panel", status_code=status.HTTP_303_SEE_OTHER)
+    
     return templates.TemplateResponse("login.html", {"request": request, "error": error})
 
 @app.post("/login")
@@ -80,7 +91,12 @@ async def login(
 
 # Ruta de registro
 @app.get("/registro", response_class=HTMLResponse)
-def registro_page(request: Request, error: Optional[str] = None):
+async def registro_page(request: Request, error: Optional[str] = None, db: Session = Depends(get_db)):
+    # Si el usuario está autenticado, redirigir al panel
+    user = await get_current_user_from_cookie(request, db)
+    if user:
+        return RedirectResponse(url="/panel", status_code=status.HTTP_303_SEE_OTHER)
+    
     return templates.TemplateResponse("registro.html", {"request": request, "error": error})
 
 @app.post("/registro")
@@ -181,41 +197,68 @@ async def panel(
 @app.post("/agregar_hospital")
 async def agregar_hospital(
     hospital: HospitalCreate, 
-    db: Session = Depends(get_db),
-    current_user: Usuario = Depends(auth.get_current_active_user)
+    request: Request,
+    db: Session = Depends(get_db)
 ):
-    nuevo_hospital = Hospital(**hospital.dict())
-    db.add(nuevo_hospital)
-    db.commit()
-    db.refresh(nuevo_hospital)
-    return JSONResponse(content={"success": True, "id": nuevo_hospital.id})
+    # Verificar autenticación por cookie
+    user = await get_current_user_from_cookie(request, db)
+    if not user:
+        raise HTTPException(status_code=401, detail="No autenticado")
+    
+    try:
+        nuevo_hospital = Hospital(**hospital.dict())
+        db.add(nuevo_hospital)
+        db.commit()
+        db.refresh(nuevo_hospital)
+        return JSONResponse(content={"success": True, "id": nuevo_hospital.id})
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=400, detail=f"Error al guardar: {str(e)}")
 
 # Actualizar hospital
 @app.put("/actualizar_hospital/{hospital_id}")
 async def actualizar_hospital(
     hospital_id: int, 
     hospital: HospitalCreate, 
-    db: Session = Depends(get_db),
-    current_user: Usuario = Depends(auth.get_current_active_user)
+    request: Request,
+    db: Session = Depends(get_db)
 ):
-    db_hospital = db.query(Hospital).filter(Hospital.id == hospital_id).first()
-    if not db_hospital:
-        raise HTTPException(status_code=404, detail="Hospital no encontrado")
-    for key, value in hospital.dict().items():
-        setattr(db_hospital, key, value)
-    db.commit()
-    return JSONResponse(content={"success": True})
+    # Verificar autenticación por cookie
+    user = await get_current_user_from_cookie(request, db)
+    if not user:
+        raise HTTPException(status_code=401, detail="No autenticado")
+    
+    try:
+        db_hospital = db.query(Hospital).filter(Hospital.id == hospital_id).first()
+        if not db_hospital:
+            raise HTTPException(status_code=404, detail="Hospital no encontrado")
+        for key, value in hospital.dict().items():
+            setattr(db_hospital, key, value)
+        db.commit()
+        return JSONResponse(content={"success": True})
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=400, detail=f"Error al actualizar: {str(e)}")
 
 # Eliminar hospital
 @app.delete("/eliminar_hospital/{hospital_id}")
 async def eliminar_hospital(
     hospital_id: int, 
-    db: Session = Depends(get_db),
-    current_user: Usuario = Depends(auth.get_current_active_user)
+    request: Request,
+    db: Session = Depends(get_db)
 ):
-    db_hospital = db.query(Hospital).filter(Hospital.id == hospital_id).first()
-    if not db_hospital:
-        raise HTTPException(status_code=404, detail="Hospital no encontrado")
-    db.delete(db_hospital)
-    db.commit()
-    return JSONResponse(content={"success": True})
+    # Verificar autenticación por cookie
+    user = await get_current_user_from_cookie(request, db)
+    if not user:
+        raise HTTPException(status_code=401, detail="No autenticado")
+    
+    try:
+        db_hospital = db.query(Hospital).filter(Hospital.id == hospital_id).first()
+        if not db_hospital:
+            raise HTTPException(status_code=404, detail="Hospital no encontrado")
+        db.delete(db_hospital)
+        db.commit()
+        return JSONResponse(content={"success": True})
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=400, detail=f"Error al eliminar: {str(e)}")
